@@ -7,8 +7,12 @@ DatabaseConnection.connect('music_library') # here we are calling a class method
 # of DatabaseConnection, we are calling the method directly on the class itself. We only want one connection to exist at a time,
 # so don't need to create many instances of the class.
 
-artist_repository = ArtistRepository.new
+# artist_repository = ArtistRepository.new
 
-artist_repository.all.each do |artist|
-  p artist
-end
+# artist_repository.all.each do |artist|
+#   p artist
+# end
+
+album_repository = AlbumRepository.new
+
+puts album_repository.find(3)
