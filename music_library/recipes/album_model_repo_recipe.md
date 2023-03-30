@@ -120,6 +120,27 @@ class AlbumRepository
 
     # Returns an array of Album objects.
   end
+
+  def create(album)
+    # Executes the SQL query:
+    # INSERT INTO albums (title, release_year) VALUES ($1, $2);
+    # returns nothing, just creates the record in the database
+  end
+
+  def delete(id)
+    # Executes the SQL query:
+    # DELETE FROM albums WHERE id = $1;
+    # returns nothing, only deletes the record from the database
+  end
+
+  def update(album)
+    # Updates an album record
+    # Takes an Album object (with the updated fields)
+    # Executes the SQL query:
+    # UPDATE albums SET title = $1, release_year = $2, artist_id = $3 WHERE id = $4;
+    # returns nothing, just updates the record in the database
+  end
+
 end
 ```
 
@@ -143,6 +164,48 @@ albums.first.id # => '1'
 albums.first.title # => 'Doolittle'
 albums.first.release_year # => '1989'
 albums.first.artist_id # => '1'
+
+# 2
+# Create a new album
+repo = AlbumRepository.new
+
+album = Album.new
+album.title = 'The Good Life'
+album.release_year = 2018
+album.artist_id = 3
+
+repo.create(album) # => nil
+albums = repo.all
+last_album = album.last
+
+last_album.title # => 'The Good Life'
+last_album.release_year # => '2018'
+last_album.artist_id # => '3'
+
+# 3
+# Delete an album
+repo = AlbumRepository.new
+id_to_delete = 1
+repo.delete(id_to_delete)
+
+all_albums = repo.all
+all_albums.length # => 3
+all_albums.first.id # => '2'
+
+# 4
+# Update an album
+repo = AlbumRepository.new
+album = repo.find(1) # get the object we want to update
+
+album.title = 'Something else'
+album.release_year = 3000
+
+repo.update(album)
+updated_album = repo.find(1)
+
+updated_album.title # => 'Something else'
+updated_album.release_year # => '3000'
+
 ```
 
 Encode this example as a test.

@@ -13,6 +13,19 @@ DatabaseConnection.connect('music_library') # here we are calling a class method
 #   p artist
 # end
 
-album_repository = AlbumRepository.new
+# album_repository = AlbumRepository.new
 
-puts album_repository.find(3)
+# puts album_repository.find(3)
+
+repository = AlbumRepository.new
+
+album = Album.new
+album.title = 'Trompe le Monde'
+album.release_year = 1991
+album.artist_id = 1
+
+repository.create(album)
+
+all_albums = repository.all
+
+# The all_albums array should contain the new Album object
