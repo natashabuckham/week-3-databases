@@ -61,13 +61,13 @@ Usually, the Model class title will be the capitalised table title (single inste
 # Table title: posts
 
 # Model class
-# (in lib/student.rb)
-class Student
+# (in lib/post.rb)
+class Post
 end
 
 # Repository class
-# (in lib/student_repository.rb)
-class StudentRepository
+# (in lib/post_repository.rb)
+class PostRepository
 end
 ```
 
@@ -80,21 +80,21 @@ Define the attributes of your Model class. You can usually map the table columns
 # Table title: posts
 
 # Model class
-# (in lib/student.rb)
+# (in lib/post.rb)
 
-class Student
+class Post
 
   # Replace the attributes by your own columns.
-  attr_accessor :id, :title, :content
+  attr_accessor :id, :title, :content, :views, :account_id
 end
 
 # The keyword attr_accessor is a special Ruby feature
 # which allows us to set and get attributes on an object,
 # here's an example:
 #
-# student = Student.new
-# student.title = 'Jo'
-# student.title
+# post = post.new
+# post.title = 'Jo'
+# post.title
 ```
 
 *You may choose to test-drive this class, but unless it contains any more logic than the example above, it is probably not needed.*
@@ -110,38 +110,41 @@ Using comments, define the method signatures (arguments and return value) and wh
 # Table title: posts
 
 # Repository class
-# (in lib/student_repository.rb)
+# (in lib/post_repository.rb)
 
-class StudentRepository
+class PostRepository
 
   # Selecting all records
   # No arguments
   def all
     # Executes the SQL query:
-    # SELECT id, title, content FROM posts;
+    # SELECT id, title, content, views, account_id FROM posts;
 
-    # Returns an array of Student objects.
+    # Returns an array of post objects.
   end
 
   # Gets a single record by its ID
   # One argument: the id (number)
   def find(id)
     # Executes the SQL query:
-    # SELECT id, title, content FROM posts WHERE id = $1;
+    # SELECT id, title, content, views, account_id FROM posts WHERE id = $1;
 
-    # Returns a single Student object.
+    # Returns a single post object.
   end
 
   # Add more methods below for each operation you'd like to implement.
 
-  # def create(student)
-  # end
+  def create(post)
+  # INSERT INTO posts (title, content, views, account_id) VALUES ($1, $2, $3, $4);
+  end
 
-  # def update(student)
-  # end
+  def update(post)
+  # UPDATE posts SET title = $1, content = $2, views = $3, account_id = $4 WHERE id = $5;
+  end
 
-  # def delete(student)
-  # end
+  def delete(id)
+  # DELETE FROM posts WHERE id = $1;
+  end
 end
 ```
 
@@ -157,31 +160,77 @@ These examples will later be encoded as RSpec tests.
 # 1
 # Get all posts
 
-repo = StudentRepository.new
+repo = PostRepository.new
 
 posts = repo.all
 
-posts.length # =>  2
+posts.length # =>  4
 
-posts[0].id # =>  1
-posts[0].title # =>  'David'
-posts[0].content # =>  'April 2022'
-
-posts[1].id # =>  2
-posts[1].title # =>  'Anna'
-posts[1].content # =>  'May 2022'
+posts[0].id # =>  '1'
+posts[0].title # =>  'My first post'
+posts[0].content # =>  'wordswordswords'
+posts[0].views # => '20'
+posts[0].account_id # => '1'
 
 # 2
-# Get a single student
+# Get a single post
 
-repo = StudentRepository.new
+repo = PostRepository.new
 
-student = repo.find(1)
+post = repo.find(1)
 
-student.id # =>  1
-student.title # =>  'David'
-student.content # =>  'April 2022'
+post.id # =>  '1'
+post.title # =>  'My first post'
+post.content # =>  'wordswordswords'
+post.views # => '20'
+post.account_id # => '1'
 
+# 3
+# Add a new post record to database
+new_post = post.new
+new_post.title = 'This is a new post'
+new_post.content = 'newnewnew'
+new_post.views = 12
+new_post.account_id = 1
+
+repo = PostRepository.new
+repo.create(new_post)
+
+posts = repo.all
+last_post = posts.last
+
+last_post.id # => '5'
+last_post.title # => 'This is a new post'
+last_post.content # => 'newnewnew'
+last_post.views # => '12'
+last_post.account_id # => '1'
+
+# 4
+# Update an post in the database
+repo = PostRepository.new
+post = repo.find(1)
+
+post.title = 'this is not an title'
+repo.update(post)
+
+updated_post = repo.find(1)
+
+updated_post.title # => 'this is not an title'
+updated_post.content # => 'wordswordswords'
+
+# 5
+# Deletes an post from the database
+repo = PostRepository.new
+repo.delete(1)
+
+posts = repo.all
+
+posts.length # => 3
+posts.first.id # => '2'
+posts.first.title # => 'My second post'
+posts.first.content # => 'more words'
+posts.first.views # => '20'
+posts.first.account_id # => '1'
 # Add more examples for each method
 ```
 
@@ -196,7 +245,7 @@ This is so you get a fresh table contents every time you run the test suite.
 ```ruby
 # EXAMPLE
 
-# file: spec/student_repository_spec.rb
+# file: spec/post_repository_spec.rb
 
 def reset_posts_table
   seed_sql = File.read('spec/seeds_posts.sql')
@@ -204,7 +253,7 @@ def reset_posts_table
   connection.exec(seed_sql)
 end
 
-describe StudentRepository do
+describe PostRepository do
   before(:each) do
     reset_posts_table
   end
