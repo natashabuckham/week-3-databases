@@ -25,10 +25,19 @@ class AccountRepository
   # Gets a single record by its ID
   # One argument: the id (number)
   def find(id)
-    # Executes the SQL query:
-    # SELECT id, email, username FROM accounts WHERE id = $1;
+    sql = 'SELECT id, email, username FROM accounts WHERE id = $1;'
+    params = [id]
 
-    # Returns a single Account object.
+    result = DatabaseConnection.exec_params(sql, params)
+
+    result.each do |record|
+      account = Account.new
+      account.id = record['id']
+      account.email = record['email']
+      account.username = record['username']
+
+      return account
+    end
   end
 
   # Add more methods below for each operation you'd like to implement.
