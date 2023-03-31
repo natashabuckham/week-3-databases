@@ -60,13 +60,13 @@ Usually, the Model class name will be the capitalised table name (single instead
 # Table name: accounts
 
 # Model class
-# (in lib/student.rb)
-class Student
+# (in lib/account.rb)
+class Account
 end
 
 # Repository class
-# (in lib/student_repository.rb)
-class StudentRepository
+# (in lib/account_repository.rb)
+class AccountRepository
 end
 ```
 
@@ -79,21 +79,21 @@ Define the attributes of your Model class. You can usually map the table columns
 # Table name: accounts
 
 # Model class
-# (in lib/student.rb)
+# (in lib/account.rb)
 
-class Student
+class Account
 
   # Replace the attributes by your own columns.
-  attr_accessor :id, :name, :cohort_name
+  attr_accessor :id, :email, :username, :post_id
 end
 
 # The keyword attr_accessor is a special Ruby feature
 # which allows us to set and get attributes on an object,
 # here's an example:
 #
-# student = Student.new
-# student.name = 'Jo'
-# student.name
+# account = account.new
+# account.name = 'Jo'
+# account.name
 ```
 
 *You may choose to test-drive this class, but unless it contains any more logic than the example above, it is probably not needed.*
@@ -109,37 +109,37 @@ Using comments, define the method signatures (arguments and return value) and wh
 # Table name: accounts
 
 # Repository class
-# (in lib/student_repository.rb)
+# (in lib/account_repository.rb)
 
-class StudentRepository
+class AccountRepository
 
   # Selecting all records
   # No arguments
   def all
     # Executes the SQL query:
-    # SELECT id, name, cohort_name FROM accounts;
+    # SELECT id, name, username FROM accounts;
 
-    # Returns an array of Student objects.
+    # Returns an array of account objects.
   end
 
   # Gets a single record by its ID
   # One argument: the id (number)
   def find(id)
     # Executes the SQL query:
-    # SELECT id, name, cohort_name FROM accounts WHERE id = $1;
+    # SELECT id, name, username FROM accounts WHERE id = $1;
 
-    # Returns a single Student object.
+    # Returns a single account object.
   end
 
   # Add more methods below for each operation you'd like to implement.
 
-  # def create(student)
+  # def create(account)
   # end
 
-  # def update(student)
+  # def update(account)
   # end
 
-  # def delete(student)
+  # def delete(account)
   # end
 end
 ```
@@ -156,30 +156,71 @@ These examples will later be encoded as RSpec tests.
 # 1
 # Get all accounts
 
-repo = StudentRepository.new
+repo = AccountRepository.new
 
 accounts = repo.all
 
 accounts.length # =>  2
 
-accounts[0].id # =>  1
-accounts[0].name # =>  'David'
-accounts[0].cohort_name # =>  'April 2022'
+accounts[0].id # =>  '1'
+accounts[0].email # =>  'an_email@gmail.com'
+accounts[0].username # =>  'user_1'
 
-accounts[1].id # =>  2
-accounts[1].name # =>  'Anna'
-accounts[1].cohort_name # =>  'May 2022'
+accounts[1].id # =>  '2'
+accounts[1].email # =>  'another_email@gmail.com'
+accounts[1].username # =>  'user_2'
 
 # 2
-# Get a single student
+# Get a single account
 
-repo = StudentRepository.new
+repo = AccountRepository.new
 
-student = repo.find(1)
+account = repo.find(1)
 
-student.id # =>  1
-student.name # =>  'David'
-student.cohort_name # =>  'April 2022'
+account.id # =>  '1'
+account.email # =>  'an_email@gmail.com'
+account.username # =>  'user_1'
+
+# 3
+# Add a new account record to database
+new_account = Account.new
+new_account.email = 'newemail@gmail.com'
+new_account.username = 'user_3'
+
+repo = AccountRepository.new
+repo.create(new_account)
+
+accounts = repo.all
+last_account = accounts.last
+
+last_account.id # => '3'
+last_account.email # => 'newemail@gmail.com'
+last_account.username # => 'user_3'
+
+# 4
+# Update an account in the database
+repo = AccountRepository.new
+account = repo.find(1)
+
+account.email = 'this is not an email'
+repo.update(account)
+
+updated_account = repo.find(1)
+
+updated_account.email # => 'this is not an email'
+
+# 5
+# Deletes an account from the database
+repo = AccountRepository.new
+repo.delete(1)
+
+accounts = repo.all
+
+accounts.length # => 1
+accounts.first.id # => '2'
+accounts.first.email # => 'another_email@gmail.com'
+accounts.first.username # => 'user_2'
+
 
 # Add more examples for each method
 ```
@@ -195,7 +236,7 @@ This is so you get a fresh table contents every time you run the test suite.
 ```ruby
 # EXAMPLE
 
-# file: spec/student_repository_spec.rb
+# file: spec/account_repository_spec.rb
 
 def reset_accounts_table
   seed_sql = File.read('spec/seeds_accounts.sql')
@@ -203,7 +244,7 @@ def reset_accounts_table
   connection.exec(seed_sql)
 end
 
-describe StudentRepository do
+describe accountRepository do
   before(:each) do
     reset_accounts_table
   end
