@@ -55,8 +55,9 @@ class AccountRepository
   end
 
   def delete(id)
-    # SQL:
-    # DELETE FROM accounts WHERE id = $1;
-    # returns nothing
+    sql = 'DELETE FROM accounts WHERE id = $1;'
+    params = [id]
+
+    DatabaseConnection.exec_params(sql, params)
   end
 end

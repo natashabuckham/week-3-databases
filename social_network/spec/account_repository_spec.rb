@@ -64,4 +64,16 @@ RSpec.describe AccountRepository do
 
     expect(updated_account.email).to eq 'this is not an email'
   end
+
+  it "deletes an account from the database" do
+    repo = AccountRepository.new
+    repo.delete(1)
+
+    accounts = repo.all
+
+    expect(accounts.length).to eq 1
+    expect(accounts.first.id).to eq '2'
+    expect(accounts.first.email).to eq 'another_email@gmail.com'
+    expect(accounts.first.username).to eq 'user_2'
+  end
 end
