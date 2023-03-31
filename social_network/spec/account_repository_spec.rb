@@ -52,4 +52,8 @@ RSpec.describe AccountRepository do
     expect(last_account.email).to eq 'newemail@gmail.com'
     expect(last_account.username).to eq 'user_3'
   end
+
+  it "updates an account in the database" do
+    
+  end
 end

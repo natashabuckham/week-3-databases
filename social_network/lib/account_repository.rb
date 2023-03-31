@@ -40,23 +40,22 @@ class AccountRepository
     end
   end
 
-  # Add more methods below for each operation you'd like to implement.
-
   def create(account)
-    # SQL
-    # INSERT INTO accounts (email, username) VALUES ($1, $2)
-    # returns nothing, just updates database
+    sql = 'INSERT INTO accounts (email, username) VALUES ($1, $2);'
+    params = [account.email, account.username]
+
+    DatabaseConnection.exec_params(sql, params)
   end
 
   def update(account)
     # SQL:
-    # UPDATE accounts SET email = $1, username = $2 WHERE id = $3
+    # UPDATE accounts SET email = $1, username = $2 WHERE id = $3;
     # returns nothing
   end
 
   def delete(id)
     # SQL:
-    # DELETE FROM accounts WHERE id = $1
+    # DELETE FROM accounts WHERE id = $1;
     # returns nothing
   end
 end
