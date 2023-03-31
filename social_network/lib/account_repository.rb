@@ -48,9 +48,10 @@ class AccountRepository
   end
 
   def update(account)
-    # SQL:
-    # UPDATE accounts SET email = $1, username = $2 WHERE id = $3;
-    # returns nothing
+    sql = 'UPDATE accounts SET email = $1, username = $2 WHERE id = $3;'
+    params = [account.email, account.username, account.id]
+
+    DatabaseConnection.exec_params(sql, params)
   end
 
   def delete(id)

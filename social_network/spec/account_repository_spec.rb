@@ -54,6 +54,14 @@ RSpec.describe AccountRepository do
   end
 
   it "updates an account in the database" do
-    
+    repo = AccountRepository.new
+    account = repo.find(1)
+
+    account.email = 'this is not an email'
+    repo.update(account)
+
+    updated_account = repo.find(1)
+
+    expect(updated_account.email).to eq 'this is not an email'
   end
 end
